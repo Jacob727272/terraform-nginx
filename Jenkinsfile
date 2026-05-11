@@ -1,5 +1,30 @@
-stage('Terraform Validate') {
-    steps {
-        sh 'terraform validate'
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Terraform Init') {
+            steps {
+                sh 'terraform init'
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                sh 'terraform plan'
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                sh 'terraform apply -auto-approve'
+            }
+        }
+
+        stage('Show Output') {
+            steps {
+                sh 'terraform output'
+            }
+        }
     }
 }
