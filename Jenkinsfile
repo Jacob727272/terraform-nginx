@@ -11,21 +11,14 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                checkout scm
-            }
-        }
-
-        stage('Clean Workspace (Safe)') {
-            steps {
                 cleanWs()
+                checkout scm
             }
         }
 
         stage('Terraform Init') {
             steps {
-                retry(2) {
-                    sh 'terraform init -input=false'
-                }
+                sh 'terraform init -input=false'
             }
         }
 
@@ -49,9 +42,7 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                retry(2) {
-                    sh 'terraform apply -auto-approve tfplan'
-                }
+                sh 'terraform apply -auto-approve tfplan'
             }
         }
     }
@@ -60,13 +51,11 @@ pipeline {
         always {
             cleanWs()
         }
-
         success {
             echo "Pipeline SUCCESS"
         }
-
         failure {
-            echo "Pipeline FAILED - Check logs"
+            echo "Pipeline FAILED"
         }
     }
 }
