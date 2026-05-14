@@ -1,57 +1,35 @@
 pipeline {
-
     agent any
-
-    environment {
-        AWS_REGION = 'us-east-1'
-    }
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main',
-                url: 'https://github.com/Jacob727272/terraform-nginx.git'
+                checkout scm
             }
         }
 
         stage('Terraform Init') {
             steps {
-                dir('terraform') {
-                    sh 'terraform init'
-                }
+                sh 'terraform init'
             }
         }
 
         stage('Terraform Format') {
             steps {
-                dir('terraform') {
-                    sh 'terraform fmt'
-                }
+                sh 'terraform fmt -check'
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                dir('terraform') {
-                    sh 'terraform validate'
-                }
+                sh 'terraform validate'
             }
         }
 
         stage('Terraform Plan') {
             steps {
-                dir('terraform') {
-                    sh 'terraform plan'
-                }
-            }
-        }
-
-        stage('Terraform Apply') {
-            steps {
-                dir('terraform') {
-                    sh 'terraform apply -auto-approve'
-                }
+                sh 'terraform plan'
             }
         }
     }
