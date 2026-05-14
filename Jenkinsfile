@@ -3,45 +3,46 @@ pipeline {
 
     options {
         timestamps()
-        disableConcurrentBuilds()
         timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds()
     }
 
     stages {
 
         stage('Checkout') {
             steps {
+                // ALWAYS keep repo here
                 checkout scm
             }
         }
 
-        stage('Clean Workspace') {
+        stage('Clean Workspace (Safe)') {
             steps {
                 cleanWs()
+                // re-checkout AFTER cleaning
+                checkout scm
             }
         }
 
         stage('Terraform Init') {
             steps {
-                sh '''
-                    terraform init -input=false
-                '''
+                retry(2) {
+                    sh '''
+                        terraform init -input=false
+                    '''
+                }
             }
         }
 
         stage('Terraform Format') {
             steps {
-                sh '''
-                    terraform fmt -check
-                '''
+                sh 'terraform fmt -check'
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                sh '''
-                    terraform validate
-                '''
+                sh 'terraform validate'
             }
         }
 
@@ -55,10 +56,13 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                input message: "Do you want to APPLY Terraform changes?"
-                sh '''
-                    terraform apply -input=false -auto-approve tfplan
-                '''
+                input message: "Approve Terraform Apply?", ok: "Deploy"
+
+                retry(2) {
+                    sh '''
+                        terraform apply -input=false tfplan
+                    '''
+                }
             }
         }
     }
@@ -67,13 +71,11 @@ pipeline {
         always {
             cleanWs()
         }
-
-        success {
-            echo "Pipeline SUCCESS - Infrastructure deployed/updated"
-        }
-
         failure {
             echo "Pipeline FAILED - Check logs"
+        }
+        success {
+            echo "Pipeline SUCCESS"
         }
     }
 }
