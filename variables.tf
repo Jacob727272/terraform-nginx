@@ -1,5 +1,19 @@
-variable "ami_id" {}
+variable "aws_region" {
+  type = string
+}
 
-variable "instance_type" {}
+variable "ami_id" {
+  type = string
+}
 
-variable "key_name" {}
+variable "instance_type" {
+  type = string
+}
+
+variable "key_name" {
+  type = string
+}
+
+variable "server_name" {
+  type = string
+}
