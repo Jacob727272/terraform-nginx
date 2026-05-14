@@ -1,8 +1,13 @@
 #!/bin/bash
-apt update -y
-apt install -y nginx
+set -eux
 
-systemctl daemon-reload
+exec > /var/log/user-data.log 2>&1
+
+sleep 30
+
+apt-get update -y
+apt-get install -y nginx
+
 systemctl enable nginx
 systemctl start nginx
 
