@@ -1,6 +1,7 @@
 resource "aws_security_group" "nginx_sg" {
 
-  name = "nginx-security-group"
+  name   = "nginx-security-group"
+  vpc_id = "vpc-0ae71fd90d15056ac"
 
   ingress {
     from_port   = 80
@@ -30,6 +31,8 @@ resource "aws_instance" "nginx_server" {
   instance_type = var.instance_type
 
   key_name = var.key_name
+
+  subnet_id = "subnet-0c373b0b7d59638de"
 
   vpc_security_group_ids = [
     aws_security_group.nginx_sg.id
