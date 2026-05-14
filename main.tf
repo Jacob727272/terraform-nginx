@@ -34,6 +34,9 @@ resource "aws_instance" "nginx_server" {
 
   key_name = var.key_name
 
+  # 🔥 THIS LINE FIXES YOUR ISSUE
+  associate_public_ip_address = true
+
   vpc_security_group_ids = [
     aws_security_group.nginx_sg.id
   ]
