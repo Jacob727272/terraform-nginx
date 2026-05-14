@@ -1,12 +1,9 @@
 #!/bin/bash
-
 apt update -y
+apt install -y nginx
 
-apt install nginx -y
-
+systemctl daemon-reload
 systemctl enable nginx
-
 systemctl start nginx
 
-echo "<h1>Welcome from Jenkins Terraform Pipeline</h1>" \
-> /var/www/html/index.html
+echo "<h1>Welcome from Jenkins Terraform Pipeline</h1>" > /var/www/html/index.html
