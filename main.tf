@@ -1,7 +1,8 @@
 resource "aws_security_group" "nginx_sg" {
 
-  name   = "nginx-security-group-new"
-  vpc_id = "vpc-0ae71fd90d15056ac"
+  name        = "nginx-sg-jenkins-${var.server_name}"
+  description = "Managed by Terraform"
+  vpc_id      = "vpc-0ae71fd90d15056ac"
 
   ingress {
     from_port   = 80
@@ -34,7 +35,6 @@ resource "aws_instance" "nginx_server" {
 
   key_name = var.key_name
 
-  # 🔥 THIS LINE FIXES YOUR ISSUE
   associate_public_ip_address = true
 
   vpc_security_group_ids = [
