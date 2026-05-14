@@ -11,7 +11,6 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                // ALWAYS keep repo here
                 checkout scm
             }
         }
@@ -19,17 +18,13 @@ pipeline {
         stage('Clean Workspace (Safe)') {
             steps {
                 cleanWs()
-                // re-checkout AFTER cleaning
-                checkout scm
             }
         }
 
         stage('Terraform Init') {
             steps {
                 retry(2) {
-                    sh '''
-                        terraform init -input=false
-                    '''
+                    sh 'terraform init -input=false'
                 }
             }
         }
@@ -48,20 +43,14 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                sh '''
-                    terraform plan -input=false -out=tfplan
-                '''
+                sh 'terraform plan -input=false -out=tfplan'
             }
         }
 
         stage('Terraform Apply') {
             steps {
-                input message: "Approve Terraform Apply?", ok: "Deploy"
-
                 retry(2) {
-                    sh '''
-                        terraform apply -input=false tfplan
-                    '''
+                    sh 'terraform apply -auto-approve tfplan'
                 }
             }
         }
@@ -71,11 +60,13 @@ pipeline {
         always {
             cleanWs()
         }
-        failure {
-            echo "Pipeline FAILED - Check logs"
-        }
+
         success {
             echo "Pipeline SUCCESS"
+        }
+
+        failure {
+            echo "Pipeline FAILED - Check logs"
         }
     }
 }
